@@ -10,10 +10,13 @@ import Foundation
 
 //the super struct needs to mention the type of generic in <>, so when the Model struct is initialised, we need to tell the type of cardContent
 struct Model<cardContent> where cardContent: Equatable{
-    var cardsArray: Array<Card>
-    var cardHistoryArray: [Int: Int]
-    var currentScore: Int = 0
-    var indexOfOneAndOnlyFaceUpCard: Int?{
+    private(set) var cardsArray: Array<Card>
+    private var cardHistoryArray: [Int: Int]
+    private(set) var currentScore: Int = 0
+    private var cardChooseStartTime: Date?
+    private var cardChooseEndTime: Date?
+    private var chooseTime: TimeInterval = 0
+    private var indexOfOneAndOnlyFaceUpCard: Int?{
         get{ cardsArray.indices.filter { cardsArray[$0].isFaceUp }.only}
         set{
             for index in cardsArray.indices{
@@ -37,24 +40,35 @@ struct Model<cardContent> where cardContent: Equatable{
             cardHistoryArray[i] = 0
         }
     }
-    
-    
+        
     mutating func choose(card: Card){
         if let chosenIndex = cardsArray.firstIndex(of: card), !cardsArray[chosenIndex].isFaceUp, !cardsArray[chosenIndex].isMatched{
             cardHistoryArray[chosenIndex]!+=1
+            //SECOND CARD
             if let potentialMatchCardIndex = indexOfOneAndOnlyFaceUpCard{
+                if (cardHistoryArray[chosenIndex]! > 1){
+                    cardChooseEndTime = Date()
+                }
+                if let startTime = cardChooseStartTime, let endTime = cardChooseEndTime{
+                    chooseTime = endTime.timeIntervalSince(startTime)
+                }
                 if cardsArray[potentialMatchCardIndex].content == cardsArray[chosenIndex].content{
                     cardsArray[potentialMatchCardIndex].isMatched = true
                     cardsArray[chosenIndex].isMatched = true
-                    currentScore+=2
+                    currentScore+=Int(10/chooseTime)
                 }else{
                     if(cardHistoryArray[chosenIndex]! > 1){
-                        currentScore-=1
+                        currentScore-=Int(5*chooseTime)
                     }
                 }
                 self.cardsArray[chosenIndex].isFaceUp = true
-            } else{
+            }
+            //FIRST CARD
+            else{
                 indexOfOneAndOnlyFaceUpCard = chosenIndex
+                if (cardHistoryArray[chosenIndex]! > 1){
+                    cardChooseStartTime = Date()
+                }
             }
         }
     }

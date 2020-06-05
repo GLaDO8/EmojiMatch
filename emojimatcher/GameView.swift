@@ -13,6 +13,8 @@
 
 import SwiftUI
 
+
+//Views in swift UI are mostly stateless and only reflect what the model actually says. In other words, views are read-only. When we do need statefullness, for example when we take user input to temporarily store data, we use @State. 
 struct GameView: View {
     @ObservedObject var GameViewModel = viewModel()
     // the body property is a computed property, but special type of computed property, as we do not explicitly put a return
@@ -52,37 +54,37 @@ struct CardView: View{
         }
     }
     
+
     //the body is embedded inside a function, because a function can access struct properties but not a closure like geometryreader and foreach. So that we don't have to put self before every function and property call
+    //the @viewbuilder lets us interpret the function body as a list of views with if else, and if there is not else, it will return a blank view.
+    @ViewBuilder
     func body(for size: CGSize) -> some View{
-        ZStack{
-            if self.card.isFaceUp{
-                // even text is a type of view
-                // stroke is a function
-                RoundedRectangle(cornerRadius: cardRadius)
-                    .fill(Color.white)
-                RoundedRectangle(cornerRadius: cardRadius)
-                    .stroke(lineWidth: cardLineWidth)
-                    .foregroundColor(.orange)
+        if ((card.isFaceUp) || (!card.isMatched)){
+            ZStack{
+                Pie(startAngle: Angle.degrees(0-90),
+                    endAngle: Angle.degrees(110-90),
+                    clockwise: true
+                )
+                    .fill(Color.orange)
+                    .padding(5)
+                    .opacity(0.4)
                 Text(card.content)
-            }else{
-                if !self.card.isMatched{
-                    RoundedRectangle(cornerRadius: cardRadius)
-                        .fill(Color.orange)
-                }
-                
+                    .cardify(isFaceUp: card.isFaceUp)
             }
+            .font(Font.system(size: min(size.width, size.height)*self.fontSizeModifier))
         }
-        .font(Font.system(size: min(size.width, size.height)*self.fontSizeModifier))
     }
     
     // MARK: - Drawing constants
     let cardRadius: CGFloat = 10.0
     let cardLineWidth: CGFloat = 2.0
-    let fontSizeModifier: CGFloat = 0.75
+    let fontSizeModifier: CGFloat = 0.6
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView(GameViewModel: viewModel())
+        let game = viewModel()
+        game.chooseCard(card: game.cardsArr[0])
+        return GameView(GameViewModel: game)
     }
 }

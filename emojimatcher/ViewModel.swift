@@ -15,7 +15,7 @@ class viewModel: ObservableObject{
     //@published will call objectswillchange whenever it is changed
     static let themeType: String = "Romantic"
     
-    static let emojiThemeDict = [
+    private static let emojiThemeDict = [
         "Romantic": ["❤️", "💕", "💛", "🥰", "😘", "😍", "😻", "💋"],
         "Horror": ["👻", "💀", "☠️", "👹", "😈", "🧟‍♂️", "🧛🏿", "👺" ],
         "Nature": ["🌪", "☀️", "🌈", "⛈", "🌲", "🌊", "⛰", "🌑"],
