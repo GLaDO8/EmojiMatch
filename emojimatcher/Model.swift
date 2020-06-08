@@ -17,7 +17,7 @@ struct Model<cardContent> where cardContent: Equatable{
     private var cardChooseEndTime: Date?
     private var chooseTime: TimeInterval = 0
     private var indexOfOneAndOnlyFaceUpCard: Int?{
-        get{ cardsArray.indices.filter { cardsArray[$0].isFaceUp }.only}
+        get{ cardsArray.indices.filter { cardsArray[$0].isFaceUp }.only }
         set{
             for index in cardsArray.indices{
                 cardsArray[index].isFaceUp = (newValue == index) //returns a bool
@@ -55,7 +55,11 @@ struct Model<cardContent> where cardContent: Equatable{
                 if cardsArray[potentialMatchCardIndex].content == cardsArray[chosenIndex].content{
                     cardsArray[potentialMatchCardIndex].isMatched = true
                     cardsArray[chosenIndex].isMatched = true
-                    currentScore+=Int(10/chooseTime)
+                    if(chooseTime == 0){
+                        currentScore+=10 // if the user get's the card right in the first attempt
+                    }else{
+                        currentScore+=Int(10/chooseTime)
+                    }
                 }else{
                     if(cardHistoryArray[chosenIndex]! > 1){
                         currentScore-=Int(5*chooseTime)
