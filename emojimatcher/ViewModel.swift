@@ -11,23 +11,38 @@ import SwiftUI
 class viewModel: ObservableObject{
     //Model initialisation
     //to make sure many views don't change it. private set lets other only see but not modify
-    //we put string in <> to tell the model that the generic type is string
-    //@published will call objectswillchange whenever it is changed
-    static let themeType: String = "Romantic"
+    // the currTheme stores the current theme our game is using
+    private(set) var currTheme: gameTheme
     
-    private static let emojiThemeDict = [
-        "Romantic": ["❤️", "💕", "💛", "🥰", "😘", "😍", "😻", "💋"],
-        "Horror": ["👻", "💀", "☠️", "👹", "😈", "🧟‍♂️", "🧛🏿", "👺" ],
-        "Nature": ["🌪", "☀️", "🌈", "⛈", "🌲", "🌊", "⛰", "🌑"],
-        "Classic": ["😂", "😇", "😝", "🤪", "😎", "🥳", "🤓", "🤮"]
+    static let emojiThemeList = [
+        gameTheme(themeName: "Romantic", themeEmojis: ["❤️", "💕", "💛", "🥰", "😘", "😍", "😻", "💋"], cardColor: Color.purple),
+        gameTheme(themeName: "Horror", themeEmojis: ["👻", "💀", "☠️", "👹", "😈", "🧟‍♂️", "🧛🏿", "👺" ], cardColor: Color.green),
+        gameTheme(themeName: "Nature", themeEmojis: ["🌪", "☀️", "🌈", "⛈", "🌲", "🌊", "⛰", "🌑"], cardColor: Color.blue),
+        gameTheme(themeName: "Classic", themeEmojis: ["😂", "😇", "😝", "🤪", "😎", "🥳", "🤓", "🤮"], cardColor: Color.orange),
+        gameTheme(themeName: "Sci-fi", themeEmojis: ["👽", "🤖", "🦾", "🧑🏾‍🚀", "🛸", "🚀", "🐉", "🧬"], cardColor: Color.yellow),
+        gameTheme(themeName: "animals", themeEmojis: ["🐶", "🐹", "🐵", "🐔", "🦆", "🐴", "🦁", "🐮"], cardColor: Color.pink)
     ]
     
-    @Published private(set) var game: Model<String> = viewModel.createMemoryGame(emojiDict: emojiThemeDict,  theme: themeType)
+    struct gameTheme{
+        var id = UUID()
+        var themeName: String
+        var themeEmojis: [String]
+        var cardColor: Color
+    }
+    
+    //we put string in <> to tell the model that the generic type is string
+    //@published will call objectswillchange whenever it is changed
+    @Published private(set) var game: Model<String>
     
     
-    static func createMemoryGame(emojiDict:Dictionary<String, [String]>, theme: String) -> (Model<String>){
+    init(){
+        currTheme = viewModel.emojiThemeList.randomElement()!
+        game = viewModel.createMemoryGame(theme: currTheme)
+    }
+    
+    static func createMemoryGame(theme: gameTheme) -> (Model<String>){
         //this returns the cardGenerator function
-        return Model<String>(noOfPairsOfCards: 6){ pairIndex in emojiThemeDict[theme]![pairIndex]}
+        return Model<String>(noOfPairsOfCards: Int.random(in: 4..<theme.themeEmojis.count)){ pairIndex in theme.themeEmojis[pairIndex]}
     }
     
     // MARK: - Access to the model for views
@@ -49,6 +64,7 @@ class viewModel: ObservableObject{
     }
     
     func newGame(){
-        self.game = viewModel.createMemoryGame(emojiDict: viewModel.emojiThemeDict, theme: viewModel.themeType)
+        currTheme = viewModel.emojiThemeList.randomElement()!
+        self.game = viewModel.createMemoryGame(theme: currTheme)
     }
 }

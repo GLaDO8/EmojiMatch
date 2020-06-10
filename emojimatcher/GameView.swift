@@ -23,17 +23,21 @@ struct GameView: View {
         VStack{
             HStack{
                 Text("Score: \(self.GameViewModel.currentScore)")
-                Text(viewModel.themeType)
+                Text(GameViewModel.currTheme.themeName)
                     .font(Font.title)
                 Button(action: {
-                    self.GameViewModel.newGame()
+                    withAnimation(.easeInOut){
+                       self.GameViewModel.newGame()
+                    }
                 }){
                     Text("New Game")
                 }
             }
             Grid(GameViewModel.cardsArr){card in
-                CardView(card: card).onTapGesture {
-                    self.GameViewModel.chooseCard(card: card)
+                CardView(card: card, cardColor: self.GameViewModel.currTheme.cardColor).onTapGesture{
+                    withAnimation(.linear){ // animates all cards when you choose with default opacity
+                      self.GameViewModel.chooseCard(card: card)
+                    }
                 }
                 .padding(15)
             }
@@ -46,6 +50,7 @@ struct GameView: View {
 //cardview represents a card, and what card to represent will be told by the viewmodel
 struct CardView: View{
     var card: Model<String>.Card
+    var cardColor: Color
     var body: some View{
         //the geometry reader is going to capture the size of the content and store it inside geometry, which we will use to dynamically adjust the font of the emoji inside the card
         //we still need to call self before the body because geometryreader is a closure
@@ -59,6 +64,7 @@ struct CardView: View{
     //the @viewbuilder lets us interpret the function body as a list of views with if else, and if there is not else, it will return a blank view.
     @ViewBuilder
     func body(for size: CGSize) -> some View{
+        //note that the matched cards will update next time when the app refreshes
         if ((card.isFaceUp) || (!card.isMatched)){
             ZStack{
                 Pie(startAngle: Angle.degrees(0-90),
@@ -69,9 +75,12 @@ struct CardView: View{
                     .padding(5)
                     .opacity(0.4)
                 Text(card.content)
-                    .cardify(isFaceUp: card.isFaceUp)
+                    .font(Font.system(size: min(size.width, size.height)*self.fontSizeModifier))
+                    .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0)) //viewModifier
+                    .animation(card.isMatched ? Animation.linear(duration: 0.4).repeatForever(autoreverses: false) : .default) //explicit animation
             }
-            .font(Font.system(size: min(size.width, size.height)*self.fontSizeModifier))
+                .cardify(isFaceUp: card.isFaceUp, cardColor: cardColor)
+            .transition(.scale)
         }
     }
     
@@ -84,7 +93,7 @@ struct CardView: View{
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = viewModel()
-        game.chooseCard(card: game.cardsArr[0])
+//        game.chooseCard(card: game.cardsArr[0])
         return GameView(GameViewModel: game)
     }
 }

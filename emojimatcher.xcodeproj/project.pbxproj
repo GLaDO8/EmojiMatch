@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		38ACD2072490EFE50041A7CF /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38ACD2062490EFE50041A7CF /* Theme.swift */; };
 		38CE1131248A19AA00449D69 /* Cardify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CE1130248A19AA00449D69 /* Cardify.swift */; };
 		38F011672487BB0400E983BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F011662487BB0400E983BE /* AppDelegate.swift */; };
 		38F011692487BB0400E983BE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F011682487BB0400E983BE /* SceneDelegate.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		38ACD2062490EFE50041A7CF /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		38CE1130248A19AA00449D69 /* Cardify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardify.swift; sourceTree = "<group>"; };
 		38F011632487BB0400E983BE /* emojimatcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = emojimatcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38F011662487BB0400E983BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				38F011682487BB0400E983BE /* SceneDelegate.swift */,
 				38F011802487BB8F00E983BE /* Model.swift */,
 				38F011822487BBA500E983BE /* ViewModel.swift */,
+				38ACD2062490EFE50041A7CF /* Theme.swift */,
 				38F011842487BBC100E983BE /* Array+Only.swift */,
 				38F0116C2487BB0900E983BE /* Assets.xcassets */,
 				38F011712487BB0900E983BE /* LaunchScreen.storyboard */,
@@ -179,6 +182,7 @@
 				38F011892487BCC700E983BE /* GameView.swift in Sources */,
 				38F011872487BBDB00E983BE /* Array+Identifiable.swift in Sources */,
 				38F0117D2487BB3700E983BE /* Grid.swift in Sources */,
+				38ACD2072490EFE50041A7CF /* Theme.swift in Sources */,
 				38F011832487BBA500E983BE /* ViewModel.swift in Sources */,
 				38F011852487BBC100E983BE /* Array+Only.swift in Sources */,
 			);
