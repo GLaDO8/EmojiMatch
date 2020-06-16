@@ -15,8 +15,6 @@ struct Cardify: AnimatableModifier{
     var isFaceUp: Bool{
         rotation < 90
     }
-    private let cardRadius: CGFloat = 10.0
-    private let cardLineWidth: CGFloat = 2.0
     
     //this tells swift what variable to animate
     var animatableData:Double{
@@ -36,16 +34,19 @@ struct Cardify: AnimatableModifier{
                     .fill(Color.white)
                 RoundedRectangle(cornerRadius: cardRadius)
                     .stroke(lineWidth: cardLineWidth)
-                    .foregroundColor(.orange)
+                    .foregroundColor(cardColor)
                 content
             }
             .opacity(isFaceUp ? 1 : 0)
-                RoundedRectangle(cornerRadius: cardRadius)
-                    .fill(cardColor)
-                    .opacity(isFaceUp ? 0 : 1)
+            RoundedRectangle(cornerRadius: cardRadius)
+                .fill(cardColor)
+                .opacity(isFaceUp ? 0 : 1)
         }
         .rotation3DEffect(Angle.degrees(rotation), axis: (0,1,0))
     }
+    
+    private let cardRadius: CGFloat = 10.0
+    private let cardLineWidth: CGFloat = 2.0
 }
 
 //this extension lets us use the view modifier without calling .modifier explicitely everytime

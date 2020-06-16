@@ -13,7 +13,6 @@ class viewModel: ObservableObject{
     //to make sure many views don't change it. private set lets other only see but not modify
     // the currTheme stores the current theme our game is using
     private(set) var currTheme: gameTheme
-    
     static let emojiThemeList = [
         gameTheme(themeName: "Romantic", themeEmojis: ["❤️", "💕", "💛", "🥰", "😘", "😍", "😻", "💋"], cardColor: Color.purple),
         gameTheme(themeName: "Horror", themeEmojis: ["👻", "💀", "☠️", "👹", "😈", "🧟‍♂️", "🧛🏿", "👺" ], cardColor: Color.green),
@@ -22,19 +21,18 @@ class viewModel: ObservableObject{
         gameTheme(themeName: "Sci-fi", themeEmojis: ["👽", "🤖", "🦾", "🧑🏾‍🚀", "🛸", "🚀", "🐉", "🧬"], cardColor: Color.yellow),
         gameTheme(themeName: "animals", themeEmojis: ["🐶", "🐹", "🐵", "🐔", "🦆", "🐴", "🦁", "🐮"], cardColor: Color.pink)
     ]
-    
     struct gameTheme{
         var id = UUID()
         var themeName: String
         var themeEmojis: [String]
         var cardColor: Color
     }
-    
     //we put string in <> to tell the model that the generic type is string
     //@published will call objectswillchange whenever it is changed
     @Published private(set) var game: Model<String>
     
     
+    // MARK: - Initialisers
     init(){
         currTheme = viewModel.emojiThemeList.randomElement()!
         game = viewModel.createMemoryGame(theme: currTheme)
@@ -45,7 +43,7 @@ class viewModel: ObservableObject{
         return Model<String>(noOfPairsOfCards: Int.random(in: 4..<theme.themeEmojis.count)){ pairIndex in theme.themeEmojis[pairIndex]}
     }
     
-    // MARK: - Access to the model for views
+    // MARK: - Model access
     //view model's job to present the model to the views in a simple manner.
     var cardsArr: Array<Model<String>.Card>{
         return game.cardsArray

@@ -16,7 +16,7 @@ import SwiftUI
 
 //Views in swift UI are mostly stateless and only reflect what the model actually says. In other words, views are read-only. When we do need statefullness, for example when we take user input to temporarily store data, we use @State. 
 struct GameView: View {
-    @ObservedObject var GameViewModel = viewModel()
+    @ObservedObject var GameViewModel:viewModel
     // the body property is a computed property, but special type of computed property, as we do not explicitly put a return
     //when we put some, we tell the compiler decide the type of return
     var body: some View {
@@ -27,7 +27,7 @@ struct GameView: View {
                     .font(Font.title)
                 Button(action: {
                     withAnimation(.easeInOut){
-                       self.GameViewModel.newGame()
+                        self.GameViewModel.newGame()
                     }
                 }){
                     Text("New Game")
@@ -36,12 +36,11 @@ struct GameView: View {
             Grid(GameViewModel.cardsArr){card in
                 CardView(card: card, cardColor: self.GameViewModel.currTheme.cardColor).onTapGesture{
                     withAnimation(.linear){ // animates all cards when you choose with default opacity
-                      self.GameViewModel.chooseCard(card: card)
+                        self.GameViewModel.chooseCard(card: card)
                     }
                 }
                 .padding(15)
             }
-            
         }
     }
 }
@@ -59,7 +58,14 @@ struct CardView: View{
         }
     }
     
-
+    @State private var animatedBonusRemainingPercentage: Double = 0
+    func startBonusTimeAnimation(){
+        animatedBonusRemainingPercentage = card.bonusRemainingPercentage
+        withAnimation(.linear(duration: card.bonusTimeRemaining)){
+            animatedBonusRemainingPercentage = 0
+        }
+    }
+    
     //the body is embedded inside a function, because a function can access struct properties but not a closure like geometryreader and foreach. So that we don't have to put self before every function and property call
     //the @viewbuilder lets us interpret the function body as a list of views with if else, and if there is not else, it will return a blank view.
     @ViewBuilder
@@ -67,19 +73,30 @@ struct CardView: View{
         //note that the matched cards will update next time when the app refreshes
         if ((card.isFaceUp) || (!card.isMatched)){
             ZStack{
-                Pie(startAngle: Angle.degrees(0-90),
-                    endAngle: Angle.degrees(110-90),
-                    clockwise: true
-                )
-                    .fill(Color.orange)
-                    .padding(5)
-                    .opacity(0.4)
+                Group{
+                    if card.isCanConsumingBonusTime{
+                        Pie(startAngle: Angle.degrees(0-90),
+                            endAngle: Angle.degrees(-360*animatedBonusRemainingPercentage-90),
+                            clockwise: true
+                        ).onAppear{
+                            self.startBonusTimeAnimation()
+                        }
+                    }else{
+                        Pie(startAngle: Angle.degrees(0-90),
+                            endAngle: Angle.degrees(-360*card.bonusRemainingPercentage-90),
+                            clockwise: true
+                        )
+                    }
+                }
+                .foregroundColor(cardColor)
+                .padding(5)
+                .opacity(0.4)
                 Text(card.content)
                     .font(Font.system(size: min(size.width, size.height)*self.fontSizeModifier))
                     .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0)) //viewModifier
                     .animation(card.isMatched ? Animation.linear(duration: 0.4).repeatForever(autoreverses: false) : .default) //explicit animation
             }
-                .cardify(isFaceUp: card.isFaceUp, cardColor: cardColor)
+            .cardify(isFaceUp: card.isFaceUp, cardColor: cardColor)
             .transition(.scale)
         }
     }
@@ -93,7 +110,7 @@ struct CardView: View{
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = viewModel()
-//        game.chooseCard(card: game.cardsArr[0])
+        //        game.chooseCard(card: game.cardsArr[0])
         return GameView(GameViewModel: game)
     }
 }
